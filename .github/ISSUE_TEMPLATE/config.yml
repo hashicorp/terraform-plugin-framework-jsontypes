@@ -5,7 +5,7 @@ contact_links:
     about: GitHub issues in this repository are only intended for bug reports and feature requests of common custom type implementations related to JSON strings. Submit bug reports and feature request for the Terraform Plugin Framework to its separate repository issue tracker.
   - name: Terraform Plugin Framework Questions
     url: https://discuss.hashicorp.com/c/terraform-providers/tf-plugin-sdk
-    about: Please ask and answer SDK related questions through the Terraform Plugin SDK section of HashiCorp Discuss.
+    about: Please ask and answer provider development related questions through the Terraform Plugin Development section of HashiCorp Discuss.
   - name: Terraform Provider Questions
     url: https://discuss.hashicorp.com/c/terraform-providers/31
     about: Please ask and answer questions through the Terraform Provider section of HashiCorp Discuss.

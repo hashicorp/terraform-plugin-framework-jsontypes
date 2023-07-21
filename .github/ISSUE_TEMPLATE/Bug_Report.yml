@@ -11,16 +11,16 @@ body:
   - type: textarea
     id: versions
     attributes:
-      label: Terraform CLI and Framework Versions
-      description: What versions of Terraform CLI and terraform-plugin-framework?
-      placeholder: Output of `terraform version` from configuration directory and `go list -m github.com/hashicorp/terraform-plugin-framework`
+      label: Go Module Versions
+      description: What versions of terraform-plugin-framework and terraform-plugin-framework-jsontypes?
+      placeholder: Output of `go list -m github.com/hashicorp/terraform-plugin-framework` and `go list -m github.com/hashicorp/terraform-plugin-framework-jsontypes`
     validations:
       required: true
   - type: textarea
     id: terraform-plugin-framework-code
     attributes:
       label: Terraform Plugin Framework Code
-      description: Please copy and paste any relevant Terraform Plugin Framework code. This will be automatically formatted into code, so no need for backticks.
+      description: Please copy and paste any relevant Terraform Plugin Framework code for the schema definition and value usage. This will be automatically formatted into code, so no need for backticks.
       render: golang
     validations:
       required: true

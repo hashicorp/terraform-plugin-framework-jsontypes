@@ -11,9 +11,9 @@ body:
   - type: textarea
     id: versions
     attributes:
-      label: Terraform CLI and Framework Versions
-      description: What versions of Terraform CLI and terraform-plugin-framework?
-      placeholder: Output of `terraform version` from configuration directory and `go list -m github.com/hashicorp/terraform-plugin-framework`
+      label: Go Module Versions
+      description: What versions of terraform-plugin-framework and terraform-plugin-framework-jsontypes?
+      placeholder: Output of `go list -m github.com/hashicorp/terraform-plugin-framework` and `go list -m github.com/hashicorp/terraform-plugin-framework-jsontypes`
     validations:
       required: true
   - type: textarea
