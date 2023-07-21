@@ -2,9 +2,9 @@ package jsontypes_test
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 )
 
 type NormalizedResourceModel struct {
@@ -17,6 +17,8 @@ type NormalizedJson struct {
 }
 
 func ExampleNormalized_Unmarshal() {
+	var diags diag.Diagnostics
+
 	// For example purposes, typically the data model would be populated automatically by Plugin Framework via Config, Plan or State.
 	// https://developer.hashicorp.com/terraform/plugin/framework/handling-data/accessing-values
 	data := NormalizedResourceModel{
@@ -27,9 +29,9 @@ func ExampleNormalized_Unmarshal() {
 	if !data.Json.IsNull() && !data.Json.IsUnknown() {
 		var jsonStruct NormalizedJson
 
-		err := data.Json.Unmarshal(&jsonStruct)
-		if err != nil {
-			log.Fatal(err)
+		diags.Append(data.Json.Unmarshal(&jsonStruct)...)
+		if diags.HasError() {
+			return
 		}
 
 		// Output: {world [1 2 3]}
