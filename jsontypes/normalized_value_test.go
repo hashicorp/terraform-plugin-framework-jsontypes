@@ -32,22 +32,37 @@ func TestNormalizedStringSemanticEquals(t *testing.T) {
 			givenJson:     jsontypes.NewNormalizedValue(`{"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}}`),
 			expectedMatch: false,
 		},
-		"not equal - additional field": {
+		"not equal - object additional field": {
 			currentJson:   jsontypes.NewNormalizedValue(`{"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}, "new-field": null}`),
 			givenJson:     jsontypes.NewNormalizedValue(`{"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}}`),
 			expectedMatch: false,
 		},
-		"semantically equal - byte-for-byte match": {
+		"not equal - array additional field": {
+			currentJson:   jsontypes.NewNormalizedValue(`[{"hello": "world"}, {"nums":[1, 2, 3]}, {"nested": {"test-bool": true, "new-field": null}}]`),
+			givenJson:     jsontypes.NewNormalizedValue(`[{"hello": "world"}, {"nums":[1, 2, 3]}, {"nested": {"test-bool": true}}]`),
+			expectedMatch: false,
+		},
+		"not equal - array item order difference": {
+			currentJson:   jsontypes.NewNormalizedValue(`[{"nums":[1, 2, 3]}, {"hello": "world"}, {"nested": {"test-bool": true}}]`),
+			givenJson:     jsontypes.NewNormalizedValue(`[{"hello": "world"}, {"nums":[1, 2, 3]}, {"nested": {"test-bool": true}}]`),
+			expectedMatch: false,
+		},
+		"semantically equal - object byte-for-byte match": {
 			currentJson:   jsontypes.NewNormalizedValue(`{"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}}`),
 			givenJson:     jsontypes.NewNormalizedValue(`{"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}}`),
 			expectedMatch: true,
 		},
-		"semantically equal - order difference": {
+		"semantically equal - array byte-for-byte match": {
+			currentJson:   jsontypes.NewNormalizedValue(`[{"hello": "world"}, {"nums":[1, 2, 3]}, {"nested": {"test-bool": true}}]`),
+			givenJson:     jsontypes.NewNormalizedValue(`[{"hello": "world"}, {"nums":[1, 2, 3]}, {"nested": {"test-bool": true}}]`),
+			expectedMatch: true,
+		},
+		"semantically equal - object field order difference": {
 			currentJson:   jsontypes.NewNormalizedValue(`{"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}}`),
 			givenJson:     jsontypes.NewNormalizedValue(`{"nums": [1, 2, 3], "nested": {"test-bool": true}, "hello": "world"}`),
 			expectedMatch: true,
 		},
-		"semantically equal - whitespace difference": {
+		"semantically equal - object whitespace difference": {
 			currentJson: jsontypes.NewNormalizedValue(`{
 				"hello": "world",
 				"nums": [1, 2, 3],
@@ -57,6 +72,40 @@ func TestNormalizedStringSemanticEquals(t *testing.T) {
 			}`),
 			givenJson:     jsontypes.NewNormalizedValue(`{"hello":"world","nums":[1,2,3],"nested":{"test-bool":true}}`),
 			expectedMatch: true,
+		},
+		"semantically equal - array whitespace difference": {
+			currentJson: jsontypes.NewNormalizedValue(`[
+				{
+				  "hello": "world"
+				},
+				{
+				  "nums": [
+					1,
+					2,
+					3
+				  ]
+				},
+				{
+				  "nested": {
+					"test-bool": true
+				  }
+				}
+			  ]`),
+			givenJson:     jsontypes.NewNormalizedValue(`[{"hello": "world"}, {"nums":[1, 2, 3]}, {"nested": {"test-bool": true}}]`),
+			expectedMatch: true,
+		},
+		"error - invalid json": {
+			currentJson:   jsontypes.NewNormalizedValue(`{"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}}`),
+			givenJson:     jsontypes.NewNormalizedValue(`&#$^"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}}`),
+			expectedMatch: false,
+			expectedDiags: diag.Diagnostics{
+				diag.NewErrorDiagnostic(
+					"Semantic Equality Check Error",
+					"An unexpected error occurred while performing semantic equality checks. "+
+						"Please report this to the provider developers.\n\n"+
+						"Error: invalid character '&' looking for beginning of value",
+				),
+			},
 		},
 		"error - not given normalized json value": {
 			currentJson:   jsontypes.NewNormalizedValue(`{"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}}`),
@@ -72,18 +121,17 @@ func TestNormalizedStringSemanticEquals(t *testing.T) {
 				),
 			},
 		},
-		"error - invalid json": {
-			currentJson:   jsontypes.NewNormalizedValue(`{"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}}`),
-			givenJson:     jsontypes.NewNormalizedValue(`"hello": "world", "nums": [1, 2, 3], "nested": {"test-bool": true}}`),
+		// JSON Semantic equality uses (decoder).UseNumber to avoid Go parsing JSON numbers into float64. This ensures that Go
+		// won't normalize the JSON number representation or impose limits on the numeric range.
+		"not equal - different JSON number representations": {
+			currentJson:   jsontypes.NewNormalizedValue(`{"large": 12423434}`),
+			givenJson:     jsontypes.NewNormalizedValue(`{"large": 1.2423434e+07}`),
 			expectedMatch: false,
-			expectedDiags: diag.Diagnostics{
-				diag.NewErrorDiagnostic(
-					"Semantic Equality Check Error",
-					"An unexpected error occurred while performing semantic equality checks. "+
-						"Please report this to the provider developers.\n\n"+
-						"Error: invalid character ':' after top-level value",
-				),
-			},
+		},
+		"semantically equal - larger than max float64 values": {
+			currentJson:   jsontypes.NewNormalizedValue(`{"large": 1.79769313486231570814527423731704356798070e+309}`),
+			givenJson:     jsontypes.NewNormalizedValue(`{"large": 1.79769313486231570814527423731704356798070e+309}`),
+			expectedMatch: true,
 		},
 	}
 	for name, testCase := range testCases {
