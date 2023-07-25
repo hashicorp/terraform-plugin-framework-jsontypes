@@ -122,7 +122,7 @@ func TestNormalizedStringSemanticEquals(t *testing.T) {
 			},
 		},
 		// JSON Semantic equality uses (decoder).UseNumber to avoid Go parsing JSON numbers into float64. This ensures that Go
-		// won't normalize the JSON number representation or impose limits on the numeric range.
+		// won't normalize the JSON number representation or impose limits on numeric range.
 		"not equal - different JSON number representations": {
 			currentJson:   jsontypes.NewNormalizedValue(`{"large": 12423434}`),
 			givenJson:     jsontypes.NewNormalizedValue(`{"large": 1.2423434e+07}`),
