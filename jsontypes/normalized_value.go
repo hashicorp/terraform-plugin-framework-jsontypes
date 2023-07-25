@@ -7,7 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -78,14 +78,34 @@ func (v Normalized) StringSemanticEquals(_ context.Context, newValuable basetype
 }
 
 func jsonEqual(s1, s2 string) (bool, error) {
-	var j1, j2 interface{}
-	if err := json.Unmarshal([]byte(s1), &j1); err != nil {
+	s1, err := normalizeJSONString(s1)
+	if err != nil {
 		return false, err
 	}
-	if err := json.Unmarshal([]byte(s2), &j2); err != nil {
+
+	s2, err = normalizeJSONString(s2)
+	if err != nil {
 		return false, err
 	}
-	return reflect.DeepEqual(j1, j2), nil
+
+	return s1 == s2, nil
+}
+
+func normalizeJSONString(jsonStr string) (string, error) {
+	dec := json.NewDecoder(strings.NewReader(jsonStr))
+	dec.UseNumber()
+
+	var temp interface{}
+	if err := dec.Decode(&temp); err != nil {
+		return "", err
+	}
+
+	jsonBytes, err := json.Marshal(&temp)
+	if err != nil {
+		return "", err
+	}
+
+	return string(jsonBytes), nil
 }
 
 // Unmarshal calls (encoding/json).Unmarshal with the Normalized StringValue and `target` input. A null or unknown value will produce an error diagnostic.
