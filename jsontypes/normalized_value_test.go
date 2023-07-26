@@ -146,7 +146,7 @@ func TestNormalizedStringSemanticEquals(t *testing.T) {
 			}
 
 			if diff := cmp.Diff(diags, testCase.expectedDiags); diff != "" {
-				t.Errorf("Unexpected diagnostics (+got, -expected): %s", diff)
+				t.Errorf("Unexpected diagnostics (-got, +expected): %s", diff)
 			}
 		})
 	}
@@ -223,7 +223,7 @@ func TestNormalizedUnmarshal(t *testing.T) {
 			diags := testCase.json.Unmarshal(testCase.target)
 
 			if diff := cmp.Diff(diags, testCase.expectedDiags); diff != "" {
-				t.Errorf("Unexpected diagnostics (+got, -expected): %s", diff)
+				t.Errorf("Unexpected diagnostics (-got, +expected): %s", diff)
 			}
 		})
 	}

@@ -82,7 +82,7 @@ func TestExactUnmarshal(t *testing.T) {
 			diags := testCase.json.Unmarshal(testCase.target)
 
 			if diff := cmp.Diff(diags, testCase.expectedDiags); diff != "" {
-				t.Errorf("Unexpected diagnostics (+got, -expected): %s", diff)
+				t.Errorf("Unexpected diagnostics (-got, +expected): %s", diff)
 			}
 		})
 	}

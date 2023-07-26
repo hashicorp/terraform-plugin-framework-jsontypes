@@ -79,7 +79,7 @@ func TestNormalizedTypeValidate(t *testing.T) {
 			diags := jsontypes.NormalizedType{}.Validate(context.Background(), testCase.in, path.Root("test"))
 
 			if diff := cmp.Diff(diags, testCase.expectedDiags); diff != "" {
-				t.Errorf("Unexpected diagnostics (+got, -expected): %s", diff)
+				t.Errorf("Unexpected diagnostics (-got, +expected): %s", diff)
 			}
 		})
 	}
