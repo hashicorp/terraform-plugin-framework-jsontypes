@@ -135,8 +135,8 @@ func TestNormalizedStringSemanticEquals(t *testing.T) {
 		},
 		// JSON Semantic equality uses Go's encoding/json library, which replaces some characters to escape codes
 		"semantically equal - HTML escape characters are equal": {
-			currentJson:   jsontypes.NewNormalizedValue(`{"ampersand": "&", "left-caret": "<", "right-caret": ">"}`),
-			givenJson:     jsontypes.NewNormalizedValue(`{"ampersand": "\u0026", "left-caret": "\u003c", "right-caret": "\u003e"}`),
+			currentJson:   jsontypes.NewNormalizedValue(`{"url_ampersand": "http://example.com?foo=bar&hello=world", "left-caret": "<", "right-caret": ">"}`),
+			givenJson:     jsontypes.NewNormalizedValue(`{"url_ampersand": "http://example.com?foo=bar\u0026hello=world", "left-caret": "\u003c", "right-caret": "\u003e"}`),
 			expectedMatch: true,
 		},
 	}
