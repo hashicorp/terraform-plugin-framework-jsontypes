@@ -133,6 +133,12 @@ func TestNormalizedStringSemanticEquals(t *testing.T) {
 			givenJson:     jsontypes.NewNormalizedValue(`{"large": 1.79769313486231570814527423731704356798070e+309}`),
 			expectedMatch: true,
 		},
+		// JSON Semantic equality uses Go's encoding/json library, which replaces some characters to escape codes
+		"semantically equal - HTML escape characters are equal": {
+			currentJson:   jsontypes.NewNormalizedValue(`{"ampersand": "&", "left-caret": "<", "right-caret": ">"}`),
+			givenJson:     jsontypes.NewNormalizedValue(`{"ampersand": "\u0026", "left-caret": "\u003c", "right-caret": "\u003e"}`),
+			expectedMatch: true,
+		},
 	}
 	for name, testCase := range testCases {
 		name, testCase := name, testCase
