@@ -93,6 +93,10 @@ func jsonEqual(s1, s2 string) (bool, error) {
 
 func normalizeJSONString(jsonStr string) (string, error) {
 	dec := json.NewDecoder(strings.NewReader(jsonStr))
+
+	// This ensures the JSON decoder will not parse JSON numbers into Go's float64 type; avoiding Go
+	// normalizing the JSON number representation or imposing limits on numeric range. See the unit test cases
+	// of StringSemanticEquals for examples.
 	dec.UseNumber()
 
 	var temp interface{}
