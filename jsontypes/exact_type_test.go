@@ -32,13 +32,13 @@ func TestExactTypeValidate(t *testing.T) {
 			in: tftypes.NewValue(tftypes.String, tftypes.UnknownValue),
 		},
 		"valid json object": {
-			in: tftypes.NewValue(tftypes.String, "{\"hello\":\"world\", \"array\": [1, 2, 3]}"),
+			in: tftypes.NewValue(tftypes.String, `{"hello":"world", "array": [1, 2, 3]}`),
 		},
 		"valid json array": {
-			in: tftypes.NewValue(tftypes.String, "[\"hello\", \"world\"]"),
+			in: tftypes.NewValue(tftypes.String, `["hello", "world"]`),
 		},
 		"invalid json - bracket mismatch": {
-			in: tftypes.NewValue(tftypes.String, "{\"hello\":\"world\""),
+			in: tftypes.NewValue(tftypes.String, `{"hello":"world"`),
 			expectedDiags: diag.Diagnostics{
 				diag.NewAttributeErrorDiagnostic(
 					path.Root("test"),
@@ -94,8 +94,8 @@ func TestExactTypeValueFromTerraform(t *testing.T) {
 		expectedErr string
 	}{
 		"true": {
-			in:          tftypes.NewValue(tftypes.String, "{\"hello\":\"world\"}"),
-			expectation: jsontypes.NewExactValue("{\"hello\":\"world\"}"),
+			in:          tftypes.NewValue(tftypes.String, `{"hello":"world"}`),
+			expectation: jsontypes.NewExactValue(`{"hello":"world"}`),
 		},
 		"unknown": {
 			in:          tftypes.NewValue(tftypes.String, tftypes.UnknownValue),
