@@ -64,7 +64,7 @@ func TestExactTypeValidate(t *testing.T) {
 			expectedDiags: diag.Diagnostics{
 				diag.NewAttributeErrorDiagnostic(
 					path.Root("test"),
-					"OH NO",
+					"JSON Exact Type Validation Error",
 					"An unexpected error was encountered trying to validate an attribute value. This is always an error in the provider. Please report the following to the provider developer:\n\n"+
 						"expected String value, received tftypes.Value with value: tftypes.Number<\"123\">",
 				),
