@@ -1,7 +1,0 @@
-kind: FEATURES
-body: 'jsontypes: Add new Normalized custom type implementation, representing a JSON
-  string that considers differing whitespace and property ordering between values
-  to be semantically equal'
-time: 2023-07-25T14:31:18.187608-04:00
-custom:
-  Issue: "2"

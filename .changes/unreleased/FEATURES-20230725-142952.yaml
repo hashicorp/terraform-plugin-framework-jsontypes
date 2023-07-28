@@ -1,6 +1,0 @@
-kind: FEATURES
-body: 'jsontypes: Add new Exact custom type implementation, representing a JSON string
-  that must match byte-for-byte'
-time: 2023-07-25T14:29:52.428506-04:00
-custom:
-  Issue: "2"
