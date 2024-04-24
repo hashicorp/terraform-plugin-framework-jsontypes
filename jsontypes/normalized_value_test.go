@@ -8,9 +8,13 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
+	"github.com/hashicorp/terraform-plugin-framework/attr/xattr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
+	"github.com/hashicorp/terraform-plugin-framework/function"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
+
+	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 )
 
 func TestNormalizedStringSemanticEquals(t *testing.T) {
@@ -152,6 +156,136 @@ func TestNormalizedStringSemanticEquals(t *testing.T) {
 			}
 
 			if diff := cmp.Diff(diags, testCase.expectedDiags); diff != "" {
+				t.Errorf("Unexpected diagnostics (-got, +expected): %s", diff)
+			}
+		})
+	}
+}
+
+func TestNormalizedValidateAttribute(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		normalized    jsontypes.Normalized
+		expectedDiags diag.Diagnostics
+	}{
+		"empty-struct": {
+			normalized: jsontypes.Normalized{},
+		},
+		"null": {
+			normalized: jsontypes.NewNormalizedNull(),
+		},
+		"unknown": {
+			normalized: jsontypes.NewNormalizedUnknown(),
+		},
+		"valid json object": {
+			normalized: jsontypes.NewNormalizedValue(`{"hello":"world", "array": [1, 2, 3]}`),
+		},
+		"valid json array": {
+			normalized: jsontypes.NewNormalizedValue(`["hello", "world"]`),
+		},
+		"invalid json - bracket mismatch": {
+			normalized: jsontypes.NewNormalizedValue(`{"hello":"world"`),
+			expectedDiags: diag.Diagnostics{
+				diag.NewAttributeErrorDiagnostic(
+					path.Root("test"),
+					"Invalid JSON String Value",
+					"A string value was provided that is not valid JSON string format (RFC 7159).\n\n"+
+						"Given Value: {\"hello\":\"world\"\n",
+				),
+			},
+		},
+		"invalid json - normal string": {
+			normalized: jsontypes.NewNormalizedValue("notvalidjson123"),
+			expectedDiags: diag.Diagnostics{
+				diag.NewAttributeErrorDiagnostic(
+					path.Root("test"),
+					"Invalid JSON String Value",
+					"A string value was provided that is not valid JSON string format (RFC 7159).\n\n"+
+						"Given Value: notvalidjson123\n",
+				),
+			},
+		},
+	}
+	for name, testCase := range testCases {
+		name, testCase := name, testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			resp := xattr.ValidateAttributeResponse{}
+
+			testCase.normalized.ValidateAttribute(
+				context.Background(),
+				xattr.ValidateAttributeRequest{
+					Path: path.Root("test"),
+				},
+				&resp,
+			)
+
+			if diff := cmp.Diff(resp.Diagnostics, testCase.expectedDiags); diff != "" {
+				t.Errorf("Unexpected diagnostics (-got, +expected): %s", diff)
+			}
+		})
+	}
+}
+
+func TestNormalizedValidateParameter(t *testing.T) {
+	t.Parallel()
+
+	testCases := map[string]struct {
+		normalized      jsontypes.Normalized
+		expectedFuncErr *function.FuncError
+	}{
+		"empty-struct": {
+			normalized: jsontypes.Normalized{},
+		},
+		"null": {
+			normalized: jsontypes.NewNormalizedNull(),
+		},
+		"unknown": {
+			normalized: jsontypes.NewNormalizedUnknown(),
+		},
+		"valid json object": {
+			normalized: jsontypes.NewNormalizedValue(`{"hello":"world", "array": [1, 2, 3]}`),
+		},
+		"valid json array": {
+			normalized: jsontypes.NewNormalizedValue(`["hello", "world"]`),
+		},
+		"invalid json - bracket mismatch": {
+			normalized: jsontypes.NewNormalizedValue(`{"hello":"world"`),
+			expectedFuncErr: function.NewArgumentFuncError(
+				0,
+				"Invalid JSON String Value: "+
+					"A string value was provided that is not valid JSON string format (RFC 7159).\n\n"+
+					"Given Value: {\"hello\":\"world\"\n",
+			),
+		},
+		"invalid json - normal string": {
+			normalized: jsontypes.NewNormalizedValue("notvalidjson123"),
+			expectedFuncErr: function.NewArgumentFuncError(
+				0,
+				"Invalid JSON String Value: "+
+					"A string value was provided that is not valid JSON string format (RFC 7159).\n\n"+
+					"Given Value: notvalidjson123\n",
+			),
+		},
+	}
+	for name, testCase := range testCases {
+		name, testCase := name, testCase
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			resp := function.ValidateParameterResponse{}
+
+			testCase.normalized.ValidateParameter(
+				context.Background(),
+				function.ValidateParameterRequest{
+					Position: 0,
+				},
+				&resp,
+			)
+
+			if diff := cmp.Diff(resp.Error, testCase.expectedFuncErr); diff != "" {
 				t.Errorf("Unexpected diagnostics (-got, +expected): %s", diff)
 			}
 		})
