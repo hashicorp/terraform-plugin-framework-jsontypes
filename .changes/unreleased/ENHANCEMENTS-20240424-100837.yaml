@@ -1,0 +1,6 @@
+kind: ENHANCEMENTS
+body: 'jsontypes: Added `ValidateAttribute()` method to `Normalized` type, which supports
+  validating an attribute value'
+time: 2024-04-24T10:08:37.408568+01:00
+custom:
+  Issue: "54"

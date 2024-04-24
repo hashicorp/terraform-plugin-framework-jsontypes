@@ -1,0 +1,6 @@
+kind: ENHANCEMENTS
+body: 'jsontypes: Added `ValidateAttribute()` method to `Exact` type, which supports
+  validating an attribute value'
+time: 2024-04-24T10:06:31.177721+01:00
+custom:
+  Issue: "54"
