@@ -1,6 +1,0 @@
-kind: BREAKING CHANGES
-body: 'jsontypes: Removed `Validate()` method from `NormalizedType` following deprecation
-  of `xattr.TypeWithValidate`'
-time: 2024-04-24T10:04:58.368073+01:00
-custom:
-  Issue: "54"

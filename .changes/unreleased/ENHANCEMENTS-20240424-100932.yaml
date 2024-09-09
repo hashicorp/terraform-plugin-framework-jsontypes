@@ -1,6 +1,0 @@
-kind: ENHANCEMENTS
-body: 'jsontypes: Added `ValidateParameter()` method to `Normalized` type, which supports
-  validating a provider-defined function parameter value'
-time: 2024-04-24T10:09:32.921067+01:00
-custom:
-  Issue: "54"
