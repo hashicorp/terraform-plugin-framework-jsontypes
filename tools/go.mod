@@ -1,6 +1,6 @@
 module tools
 
-go 1.22.7
+go 1.24.0
 
 require github.com/hashicorp/copywrite v0.21.0
 
